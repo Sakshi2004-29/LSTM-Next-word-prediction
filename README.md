@@ -25,7 +25,7 @@
 
 | Resource | Link |
 |----------|------|
-| Google Colab Notebook | _(paste here)_ |
+| Google Colab Notebook |https://colab.research.google.com/drive/1KnB7XtN_A0mYxkoOYK-xbxMG6MOeodTb?usp=sharing|
 | GitHub Repository | _(paste here)_ |
 
 ---
@@ -382,7 +382,7 @@ User Input → Clean Text → Tokenize → Pad Sequence → LSTM Forward Pass �
 
 ---
 
-## 🧠 LSTM Mathematical Model (Mandatory for Presentation)
+## 🧠 LSTM Mathematical Model
 
 ### What is LSTM?
 LSTM (Long Short-Term Memory) is a gated recurrent neural network that solves the **vanishing gradient problem** of standard RNNs, enabling the model to learn long-range word dependencies in text sequences.
