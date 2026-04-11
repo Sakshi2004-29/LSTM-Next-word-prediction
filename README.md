@@ -65,9 +65,9 @@ LSTM-Next-Word-Prediction/
 ### Preprocessing Steps:
 1. Convert text to lowercase
 2. Remove special characters and punctuation
-3. Tokenize words (each word → unique number)
-4. Create n-gram sequences using sliding window
-5. Pad sequences to equal length
+3. Tokenize words — each word gets a unique number
+4. Create n-gram sequences using sliding window approach
+5. Pad sequences to equal length using pre-padding
 6. Split into input (X) and output (y) pairs
 
 ---
@@ -99,71 +99,171 @@ Predicted Word   →  argmax of probabilities
 | Layer 3 | Dropout | 0.2 |
 | Layer 4 | LSTM | 100 |
 | Layer 5 | Dropout | 0.2 |
-| Layer 6 | Dense (Softmax) | vocab_size |
+| Layer 6 | Dense Softmax | vocab_size |
 
 ---
 
 ## 🧠 LSTM Theory
 
 ### What is LSTM?
-LSTM (Long Short-Term Memory) is a special neural network that remembers information over long sequences — perfect for text prediction!
+LSTM (Long Short-Term Memory) is a special type of neural network designed to remember information over long sequences. Unlike regular neural networks, LSTM can remember context from many words ago — making it perfect for text prediction!
 
 ### Three Gates:
 
-#### 🔒 Forget Gate — *"What to forget?"*
+#### 🔒 Forget Gate — *"What should I forget?"*
 ```
 f(t) = σ(Wf · [h(t-1), x(t)] + bf)
 ```
-Decides what information to throw away from cell state.
+- Looks at previous hidden state and current input
+- Outputs value between 0 and 1
+- 0 = completely forget, 1 = completely keep
 
-#### 📥 Input Gate — *"What new info to store?"*
+#### 📥 Input Gate — *"What new info should I store?"*
 ```
 i(t) = σ(Wi · [h(t-1), x(t)] + bi)
 C̃(t) = tanh(Wc · [h(t-1), x(t)] + bc)
 ```
-Decides which new information to add to cell state.
+- Decides which new information to add to memory
+- Creates candidate values to potentially store
 
-#### 📤 Output Gate — *"What to output?"*
+#### 📤 Output Gate — *"What should I output?"*
 ```
 o(t) = σ(Wo · [h(t-1), x(t)] + bo)
 h(t) = o(t) * tanh(C(t))
 ```
-Decides what the next hidden state should be.
+- Decides what part of memory to output
+- Produces the hidden state for next step
 
 ### Cell State & Hidden State:
-- **Cell State C(t)** = Long-term memory (passes through time)
-- **Hidden State h(t)** = Short-term output used for prediction
+- **Cell State C(t)** = Long-term memory — passes information through the entire sequence
+- **Hidden State h(t)** = Short-term output — used for making the actual word prediction
 
 ---
 
-## 🚀 How to Run
+## 🚀 How to Run — Complete Steps
 
-### Step 1: Train Model in Google Colab
-1. Open `LSTM_Text_Prediction.ipynb` in [Google Colab](https://colab.research.google.com)
-2. Enable GPU: Runtime → Change runtime type → T4 GPU
-3. Click Runtime → Run All
-4. Download: `lstm_model.h5`, `tokenizer.pkl`, `max_seq_len.pkl`
+---
 
-### Step 2: Setup Local Environment
-```bash
-# Install Python 3.11 (required — TensorFlow does not support Python 3.13)
-# Download from: https://python.org/downloads/release/python-3119/
+### 📒 PART 1: Train the Model in Google Colab
 
-# Create virtual environment
-py -3.11 -m venv venv
-venv\Scripts\activate
+#### Step 1 — Open Google Colab
+- Go to 👉 [colab.research.google.com](https://colab.research.google.com)
+- Sign in with your Google account
 
-# Install dependencies
-pip install fastapi uvicorn tensorflow numpy nltk
+#### Step 2 — Upload the Notebook
+- Click **File** → **Upload notebook**
+- Select `LSTM_Text_Prediction.ipynb` from your PC
+- The notebook will open automatically
+
+#### Step 3 — Enable GPU (Important for fast training!)
+- Click **Runtime** in the top menu
+- Click **Change runtime type**
+- Under **Hardware accelerator** → select **T4 GPU**
+- Click **Save**
+
+#### Step 4 — Run All Cells
+- Click **Runtime** → **Run all**
+- If a warning appears → click **Run anyway**
+- Wait for training to complete (around 5–15 minutes)
+- You will see accuracy improving after each epoch
+
+#### Step 5 — Download the Saved Files
+After training finishes, 4 files will auto-download to your PC:
+- `lstm_model.h5` — the trained model
+- `tokenizer.pkl` — word to number converter
+- `max_seq_len.pkl` — sequence length info
+- `training_plot.png` — accuracy and loss graph
+
+> If files do not download automatically:
+> Click the **folder icon 📁** in the left sidebar of Colab
+> Right-click each file → **Download**
+
+---
+
+### 💻 PART 2: Deploy with FastAPI on Your PC
+
+#### Step 1 — Install Python 3.11
+- Download from 👉 [python.org/downloads/release/python-3119](https://www.python.org/downloads/release/python-3119/)
+- During installation → **tick the checkbox "Add Python to PATH"**
+- Click Install
+
+> ⚠️ Important: TensorFlow does NOT support Python 3.13. Use Python 3.11 only.
+
+#### Step 2 — Create Project Folder
+Create a folder on your Desktop called `LSTM Project` and put all these files inside:
+```
+LSTM Project/
+├── main.py
+├── lstm_model.h5
+├── tokenizer.pkl
+└── max_seq_len.pkl
 ```
 
-### Step 3: Run FastAPI Server
+#### Step 3 — Open CMD in the Folder
+- Open your `LSTM Project` folder
+- Click on the **address bar** at the top
+- Type `cmd` and press **Enter**
+- Command Prompt opens directly in that folder
+
+#### Step 4 — Create Virtual Environment
+```bash
+py -3.11 -m venv venv
+```
+
+#### Step 5 — Activate Virtual Environment
+```bash
+venv\Scripts\activate
+```
+You will see `(venv)` at the start of the line — this means it is active ✅
+
+#### Step 6 — Install Required Libraries
+```bash
+pip install fastapi uvicorn tensorflow numpy nltk
+```
+Wait 2–5 minutes for installation to complete.
+
+#### Step 7 — Run the FastAPI Server
 ```bash
 python main.py
 ```
 
-### Step 4: Test the API
-Open browser → `http://127.0.0.1:8000/docs`
+You will see:
+```
+✅ Model loaded successfully!
+🌐 API running at : http://127.0.0.1:8000
+📖 Swagger UI     : http://127.0.0.1:8000/docs
+```
+
+---
+
+### 🧪 PART 3: Test the API
+
+#### Option A — Swagger UI (Easiest)
+1. Open browser → go to `http://127.0.0.1:8000/docs`
+2. Click **POST /predict**
+3. Click **Try it out**
+4. Enter your sentence in the box:
+```json
+{
+  "text": "to be or not to"
+}
+```
+5. Click **Execute**
+6. See the predicted next word in the response below
+
+#### Option B — Postman
+1. Download Postman from 👉 [postman.com/downloads](https://www.postman.com/downloads/)
+2. Create a new request
+3. Set method to **POST**
+4. URL: `http://127.0.0.1:8000/predict`
+5. Click **Body** → **raw** → **JSON**
+6. Paste:
+```json
+{
+  "text": "to be or not to"
+}
+```
+7. Click **Send**
 
 ---
 
@@ -196,13 +296,15 @@ POST /predict
 
 ## 🧪 Test Examples
 
-| Input | Predicted Word |
-|-------|---------------|
+| Input Sentence | Predicted Next Word |
+|----------------|-------------------|
 | `to be or not to` | `be` |
 | `the king of` | `denmark` |
 | `my lord` | `i` |
 | `good night sweet` | `prince` |
 | `the queen` | `of` |
+| `i am` | `not` |
+| `what is` | `the` |
 
 ---
 
@@ -211,9 +313,10 @@ POST /predict
 | Metric | Value |
 |--------|-------|
 | Dataset | Shakespeare Hamlet |
-| Vocabulary Size | ~3,200 words |
+| Vocabulary Size | ~3,200 unique words |
 | Training Samples | 15,000 sequences |
 | Epochs | 30 |
+| Batch Size | 64 |
 | Optimizer | Adam |
 | Loss Function | Categorical Crossentropy |
 
@@ -239,5 +342,5 @@ As per assignment requirements, we acknowledge the use of the following AI tools
 
 ## 📜 License
 
-This project is for educational purposes — Lab Assignment 5.  
+This project is for educational purposes — Lab Assignment 5.
 Dataset used is Public Domain (Project Gutenberg via NLTK).
