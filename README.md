@@ -26,7 +26,7 @@
 | Resource | Link |
 |----------|------|
 | Google Colab Notebook |https://colab.research.google.com/drive/1KnB7XtN_A0mYxkoOYK-xbxMG6MOeodTb?usp=sharing|
-| GitHub Repository | _(paste here)_ |
+| GitHub Repository |https://github.com/Sakshi2004-29/LSTM-Next-word-prediction|
 
 ---
 
