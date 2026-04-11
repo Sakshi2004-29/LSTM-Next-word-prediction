@@ -264,17 +264,6 @@ After  : [0, 0, 0, 0, 0, 0, 0, 3, 7, 12]
 | Training Loss | Consistently decreasing |
 | Validation Loss | Stable with minor fluctuation |
 
-#### Sample Next Word Predictions
-
-| Input Sentence | Predicted Next Word | Full Output |
-|----------------|---------------------|-------------|
-| `to be or not to` | `be` | `to be or not to be` |
-| `the king of` | `denmark` | `the king of denmark` |
-| `my lord` | `i` | `my lord i` |
-| `good night sweet` | `prince` | `good night sweet prince` |
-| `the queen` | `of` | `the queen of` |
-| `i am` | `not` | `i am not` |
-| `what is` | `the` | `what is the` |
 
 **Analysis:**
 - Model successfully learned Shakespearean word patterns and context
@@ -359,18 +348,15 @@ User Input → Clean Text → Tokenize → Pad Sequence → LSTM Forward Pass �
 ### 🖥️ Screenshot 1 — FastAPI Swagger UI Homepage
 
 > **How to take:** Open `http://127.0.0.1:8000/docs` in browser → take screenshot
-
-![Swagger UI Homepage]
 <img width="1919" height="1017" alt="image" src="https://github.com/user-attachments/assets/14b6267e-1167-4bd9-9006-83f28bde69ce" />
 
 
 ---
 
 ### 🔮 Screenshot 2 — POST /predict Endpoint (Try it out)
-
 > **How to take:** Click POST /predict → Try it out → see the endpoint open up → screenshot
+<img width="1919" height="1014" alt="image" src="https://github.com/user-attachments/assets/61500487-6981-463f-a77c-c3b36a053aa9" />
 
-![Predict Endpoint](screenshots/predict_endpoint.png)
 
 ---
 
@@ -378,8 +364,8 @@ User Input → Clean Text → Tokenize → Pad Sequence → LSTM Forward Pass �
 
 > **Input used:** `"to be or not to"`
 > **How to take:** Execute the request → scroll to response section → screenshot
+<img width="1919" height="972" alt="image" src="https://github.com/user-attachments/assets/f2635dd0-e16d-4461-9c9b-94282a70e482" />
 
-![Prediction Result 1](screenshots/result_1.png)
 
 ---
 
@@ -387,8 +373,8 @@ User Input → Clean Text → Tokenize → Pad Sequence → LSTM Forward Pass �
 
 > **Input used:** `"the king of"`
 > **How to take:** Change text to `"the king of"` → Execute → screenshot
+<img width="1918" height="965" alt="image" src="https://github.com/user-attachments/assets/794ba0bb-9f3c-452d-ab0a-0e7af304f7ee" />
 
-![Prediction Result 2](screenshots/result_2.png)
 
 ---
 
@@ -396,8 +382,8 @@ User Input → Clean Text → Tokenize → Pad Sequence → LSTM Forward Pass �
 
 > **Input used:** `"good night sweet"`
 > **How to take:** Change text → Execute → screenshot
+<img width="1919" height="977" alt="image" src="https://github.com/user-attachments/assets/558eb344-5c1a-43b9-8ce8-7072d8e10f17" />
 
-![Prediction Result 3](screenshots/result_3.png)
 
 ---
 
@@ -407,26 +393,6 @@ User Input → Clean Text → Tokenize → Pad Sequence → LSTM Forward Pass �
 
 ![Training Plot](training_plot.png)
 
----
-
-### 💻 Screenshot 7 — FastAPI Server Running in CMD
-
-> **How to take:** Screenshot your CMD window showing server started successfully
-
-![CMD Server Running](screenshots/cmd_server.png)
-
----
-
-### 🩺 Screenshot 8 — GET /health Endpoint Response
-
-> **How to take:** Click GET /health → Try it out → Execute → screenshot response
-
-![Health Check](screenshots/health_check.png)
-
----
-
-> 📝 **Note:** Replace the image placeholders above with your actual screenshots.
-> Create a folder called `screenshots/` in your GitHub repo and upload all images there.
 
 ---
 
