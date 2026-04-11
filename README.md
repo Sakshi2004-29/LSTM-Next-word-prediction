@@ -309,8 +309,8 @@ After  : [0, 0, 0, 0, 0, 0, 0, 3, 7, 12]
 ```json
 {
   "input_text": "to be or not to",
-  "predicted_word": "be",
-  "completed_sentence": "to be or not to be"
+  "predicted_word": "earth",
+  "completed_sentence": "to be or not to earth"
 }
 ```
 
@@ -346,50 +346,36 @@ User Input → Clean Text → Tokenize → Pad Sequence → LSTM Forward Pass �
 ---
 
 ### 🖥️ Screenshot 1 — FastAPI Swagger UI Homepage
-
-> **How to take:** Open `http://127.0.0.1:8000/docs` in browser → take screenshot
 <img width="1919" height="1017" alt="image" src="https://github.com/user-attachments/assets/14b6267e-1167-4bd9-9006-83f28bde69ce" />
 
 
 ---
 
-### 🔮 Screenshot 2 — POST /predict Endpoint (Try it out)
-> **How to take:** Click POST /predict → Try it out → see the endpoint open up → screenshot
+### 🔮 Screenshot 2 — POST /predict Endpoint 
 <img width="1919" height="1014" alt="image" src="https://github.com/user-attachments/assets/61500487-6981-463f-a77c-c3b36a053aa9" />
 
 
 ---
 
 ### ✅ Screenshot 3 — Successful Prediction Response 1
-
-> **Input used:** `"to be or not to"`
-> **How to take:** Execute the request → scroll to response section → screenshot
 <img width="1919" height="972" alt="image" src="https://github.com/user-attachments/assets/f2635dd0-e16d-4461-9c9b-94282a70e482" />
 
 
 ---
 
 ### ✅ Screenshot 4 — Successful Prediction Response 2
-
-> **Input used:** `"the king of"`
-> **How to take:** Change text to `"the king of"` → Execute → screenshot
 <img width="1918" height="965" alt="image" src="https://github.com/user-attachments/assets/794ba0bb-9f3c-452d-ab0a-0e7af304f7ee" />
 
 
 ---
 
 ### ✅ Screenshot 5 — Successful Prediction Response 3
-
-> **Input used:** `"good night sweet"`
-> **How to take:** Change text → Execute → screenshot
 <img width="1919" height="977" alt="image" src="https://github.com/user-attachments/assets/558eb344-5c1a-43b9-8ce8-7072d8e10f17" />
 
 
 ---
 
 ### 📊 Screenshot 6 — Model Training Accuracy & Loss Graph
-
-> **How to take:** This image is auto-saved as `training_plot.png` after Colab training
 
 ![Training Plot](training_plot.png)
 
