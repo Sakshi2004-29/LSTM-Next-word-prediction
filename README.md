@@ -12,12 +12,11 @@
 
 ## 👥 Group Members
 
-| Name | Roll No | Contribution |
+| Name | Roll No |Batch 
 |------|---------|-------------|
-| Member 1 | XXX | Dataset collection & preprocessing |
-| Member 2 | XXX | LSTM model design & training |
-| Member 3 | XXX | FastAPI deployment & testing |
-| Member 4 | XXX | Documentation & GitHub |
+| Heena Janbandhu | 202301070032 | Batch-2|
+| Sakshi Patil |202301070173| Batch-3|
+
 
 ---
 
