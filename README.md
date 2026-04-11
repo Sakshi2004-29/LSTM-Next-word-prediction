@@ -3,6 +3,7 @@
 ![Python](https://img.shields.io/badge/Python-3.11-blue)
 ![TensorFlow](https://img.shields.io/badge/TensorFlow-2.x-orange)
 ![FastAPI](https://img.shields.io/badge/FastAPI-0.110-green)
+![LSTM](https://img.shields.io/badge/Model-LSTM-purple)
 ![Status](https://img.shields.io/badge/Status-Complete-brightgreen)
 
 > **Lab Assignment 5 | LSTM-Based Sequence Prediction System with Deployment**
@@ -12,49 +13,36 @@
 
 ## 👥 Group Members
 
-| Name | Roll No |Batch 
+| Name | Roll No | Batch |
 |------|---------|-------------|
-| Heena Janbandhu | 202301070032 | Batch-2|
-| Sakshi Patil |202301070173| Batch-3|
+| Heena Janbandhu | 202301070032 | Batch-2 |
+| Sakshi Patil | 202301070173 | Batch-3 |
 
 
 ---
 
-## 🔗 Links
+## 🔗 Submission Links
 
-- **Google Colab Notebook:** _(paste your Colab link here)_
-- **GitHub Repository:** _(paste your GitHub link here)_
+| Resource | Link |
+|----------|------|
+| Google Colab Notebook | _(paste here)_ |
+| GitHub Repository | _(paste here)_ |
 
 ---
 
 ## 📌 Problem Statement
 
-In Natural Language Processing (NLP), predicting the next word in a sequence is a fundamental task used in applications like autocomplete, chatbots, and text editors. Traditional statistical models like N-grams fail to capture long-range dependencies in text. This project addresses that problem by building an **LSTM-based deep learning model** that learns patterns from text sequences and predicts the most likely next word given an input sentence.
+Natural Language Processing (NLP) tasks such as text autocomplete, smart keyboards, and conversational AI rely on the ability to predict the next word in a sequence. Traditional N-gram models suffer from limited context windows and fail to capture long-range dependencies in text. This project addresses the problem by implementing an **LSTM (Long Short-Term Memory)** deep learning model that learns sequential patterns from text data and predicts the most probable next word given an input sentence. The system is further deployed as a production-ready REST API using **FastAPI**, enabling real-time inference.
 
 ---
 
-## 🎯 Objective
+## 🎯 Objectives
 
-- Develop an LSTM-based sequence prediction model for next word prediction
-- Implement end-to-end data pipeline from raw text to trained model
-- Deploy the model as a REST API using FastAPI
-- Enable real-time next word prediction via API endpoint
-
----
-
-## 📂 Project Structure
-
-```
-LSTM-Next-Word-Prediction/
-│
-├── LSTM_Text_Prediction.ipynb   ← Google Colab Notebook (full pipeline)
-├── main.py                      ← FastAPI deployment server
-├── lstm_model.h5                ← Saved trained model
-├── tokenizer.pkl                ← Saved tokenizer
-├── max_seq_len.pkl              ← Saved sequence length
-├── training_plot.png            ← Accuracy & loss curves
-└── README.md                    ← This file
-```
+- Collect and preprocess a real-world text dataset for sequence learning
+- Design and train a deep LSTM neural network for next word prediction
+- Evaluate model performance using accuracy and loss metrics
+- Deploy the trained model as a REST API using FastAPI
+- Validate the end-to-end system through Swagger UI and Postman testing
 
 ---
 
@@ -67,22 +55,24 @@ LSTM-Next-Word-Prediction/
 | **Source Link** | https://www.nltk.org/book/ch02.html |
 | **Type** | Public Domain Classic English Literature |
 | **Total Words Used** | 20,000 words |
-| **License** | Public Domain (Project Gutenberg) |
+| **License** | Public Domain — Project Gutenberg |
 
 **Description:**
-The dataset is Shakespeare's *Hamlet* — a classic English play available for free through NLTK's Gutenberg corpus. It contains rich English vocabulary, complex sentence structures, and long-range word dependencies — making it ideal for training an LSTM sequence prediction model.
+Shakespeare's *Hamlet* is a classic English literary text available freely through the NLTK Gutenberg corpus. It contains rich English vocabulary, complex sentence structures, and long-range word dependencies — making it ideal for training an LSTM sequence prediction model.
 
 ---
 
-## 🔄 ML Pipeline — Step by Step
+## 🚀 System Development Workflow
 
 ---
 
-### ✅ Step 1: Data Collection
+### 📦 Phase 1 — Raw Text Acquisition
 
-- Dataset downloaded using Python's **NLTK library**
-- Used `nltk.corpus.gutenberg` to fetch `shakespeare-hamlet.txt`
-- Raw text loaded directly into memory — no manual download needed
+**Objective:** Fetch real-world English text data to train the prediction model.
+
+- Used **NLTK Gutenberg API** to download Shakespeare's Hamlet — no manual download needed
+- Verified raw text structure and confirmed dataset size (~180,000 characters)
+- Selected this dataset due to its rich vocabulary and complex sentence patterns
 
 ```python
 import nltk
@@ -93,145 +83,191 @@ raw_text = gutenberg.raw('shakespeare-hamlet.txt')
 
 ---
 
-### ✅ Step 2: Data Preprocessing
+### 🧹 Phase 2 — Text Cleaning & Normalization
 
-Raw text cannot be fed directly into an LSTM model. The following preprocessing steps were applied:
+**Objective:** Remove noise from raw text so the model learns only meaningful word patterns.
 
-#### 2a — Text Cleaning
-- Converted all text to **lowercase**
-- Removed **special characters**, numbers, and punctuation
-- Removed extra whitespace
-- Limited to first **20,000 words** for faster training
-
-```
-Before: "[Act I] To BE, or Not to be -- that IS the Question!"
-After:  "act i to be or not to be that is the question"
-```
-
-#### 2b — Tokenization
-- Each unique word assigned a unique integer ID using **Keras Tokenizer**
-- Built a **vocabulary** of all unique words in the text
+- Converted all text to **lowercase** to treat `"The"` and `"the"` as the same word
+- Removed **punctuation, special characters, and numbers** using regex
+- Eliminated extra whitespace and blank lines
+- Limited text to **20,000 words** for efficient Colab training
 
 ```
-"to"  → 1
-"be"  → 2
-"or"  → 3
-"not" → 4
+Before → "[Act I] To BE, or Not to be -- that IS the Question!"
+After  → "act i to be or not to be that is the question"
 ```
-
-#### 2c — Sequence Generation
-- Used **sliding window** approach to create input sequences
-- For every position in text, all previous words form the input
-
-```
-Text: "to be or not to be"
-
-Sequence 1: [to]              → be
-Sequence 2: [to, be]          → or
-Sequence 3: [to, be, or]      → not
-Sequence 4: [to, be, or, not] → to
-```
-
-#### 2d — Padding
-- All sequences padded to **equal length** using pre-padding (zeros added at beginning)
-- Required because LSTM expects fixed-size input
-
-```
-Before padding: [3, 7, 12]
-After padding:  [0, 0, 0, 0, 0, 0, 0, 3, 7, 12]
-```
-
-#### 2e — Input-Output Split
-- **X** = all words in sequence except last (input)
-- **y** = last word in sequence (target to predict)
-- **y** converted to **one-hot encoding** for classification
 
 ---
 
-### ✅ Step 3: Exploratory Data Analysis (EDA)
+### 🔢 Phase 3 — Word Tokenization
+
+**Objective:** Convert cleaned text into numerical format that the LSTM model can process.
+
+- Applied **Keras Tokenizer** to assign a unique integer to every unique word
+- Built a complete vocabulary index of ~3,200 unique words
+
+```
+"to"     →  1       "be"   →  2
+"or"     →  3       "not"  →  4
+"hamlet" →  5       "king" →  6
+```
+
+---
+
+### 🔗 Phase 4 — Sequence Construction
+
+**Objective:** Create input-output pairs from tokenized text using a sliding window approach.
+
+- For every position in the token list, all preceding words form the **input context**
+- The word immediately after the context becomes the **target output**
+
+```
+Text tokens : [1, 2, 3, 4, 1, 2]
+
+Pair 1 : Input → [1]          Target → 2
+Pair 2 : Input → [1, 2]       Target → 3
+Pair 3 : Input → [1, 2, 3]    Target → 4
+Pair 4 : Input → [1, 2, 3, 4] Target → 1
+```
+
+**Total sequences generated:** 15,000
+
+---
+
+### 📐 Phase 5 — Sequence Padding & Label Encoding
+
+**Objective:** Standardize all sequences to the same length and encode output labels.
+
+**Padding:**
+- LSTM requires all input sequences to be of **equal length**
+- Applied **pre-padding** — zeros added at the beginning of shorter sequences
+
+```
+Before : [3, 7, 12]
+After  : [0, 0, 0, 0, 0, 0, 0, 3, 7, 12]
+```
+
+**Label Encoding:**
+- Target word index converted to **one-hot vector** for classification
+- Example: Word index `4` in vocabulary of 3,200 → `[0, 0, 0, 0, 1, 0, ..., 0]`
+
+---
+
+### 📊 Phase 6 — Dataset Analysis (EDA)
+
+**Objective:** Understand dataset characteristics before model design.
 
 | Metric | Value |
 |--------|-------|
-| Total characters in raw text | ~180,000 |
-| Total words (limited) | 20,000 |
-| Unique words (vocabulary size) | ~3,200 |
+| Total raw characters | ~180,000 |
+| Total words (after limit) | 20,000 |
+| Unique vocabulary size | ~3,200 words |
 | Total training sequences | 15,000 |
 | Maximum sequence length | 11 tokens |
 | Average sequence length | 6.4 tokens |
+| Training samples (90%) | ~13,500 |
+| Validation samples (10%) | ~1,500 |
 
-**Key observations:**
-- Most common words: `the`, `and`, `to`, `of`, `i`
-- Dataset has rich context suitable for sequence learning
-- Sufficient vocabulary size to train a meaningful LSTM model
+**Key Observations:**
+- Dataset contains sufficiently rich vocabulary for meaningful sequence learning
+- Most frequent words: `the`, `and`, `to`, `of`, `i`, `you`, `my`
+- Sequence length distribution is well-suited for LSTM memory capacity
 
 ---
 
-### ✅ Step 4: Model Implementation
+### 🏗️ Phase 7 — LSTM Network Architecture Design
 
-#### Architecture — Stacked LSTM
+**Objective:** Build a deep stacked LSTM model capable of learning word sequence patterns.
 
 ```
-Input Sequence  →  [0, 0, 3, 7, 12, 45]
-        ↓
-Embedding Layer    (vocab_size × 100)   → Converts word IDs to dense vectors
-        ↓
-LSTM Layer 1       (150 units)          → Learns sequence patterns
-        ↓
-Dropout (0.2)                           → Prevents overfitting
-        ↓
-LSTM Layer 2       (100 units)          → Deeper pattern learning
-        ↓
-Dropout (0.2)
-        ↓
-Dense + Softmax    (vocab_size)         → Probability for each word
-        ↓
-Predicted Word     → argmax → "be"
+┌──────────────────────────────────────────┐
+│      Input — Padded Token Sequence       │
+└─────────────────┬────────────────────────┘
+                  ↓
+┌──────────────────────────────────────────┐
+│  Embedding Layer  (vocab_size × 100)     │  Word ID → Dense Vector
+└─────────────────┬────────────────────────┘
+                  ↓
+┌──────────────────────────────────────────┐
+│  LSTM Layer 1   (150 units)              │  Learns sequence patterns
+│  return_sequences = True                 │
+└─────────────────┬────────────────────────┘
+                  ↓
+┌──────────────────────────────────────────┐
+│  Dropout        (rate = 0.2)             │  Reduces overfitting
+└─────────────────┬────────────────────────┘
+                  ↓
+┌──────────────────────────────────────────┐
+│  LSTM Layer 2   (100 units)              │  Deeper representation
+│  return_sequences = False                │
+└─────────────────┬────────────────────────┘
+                  ↓
+┌──────────────────────────────────────────┐
+│  Dropout        (rate = 0.2)             │  Reduces overfitting
+└─────────────────┬────────────────────────┘
+                  ↓
+┌──────────────────────────────────────────┐
+│  Dense + Softmax  (vocab_size units)     │  Word probability output
+└─────────────────┬────────────────────────┘
+                  ↓
+           Predicted Next Word
 ```
 
-| Layer | Type | Output Shape | Parameters |
-|-------|------|-------------|------------|
-| Embedding | Embedding | (None, 10, 100) | 320,000 |
-| LSTM 1 | LSTM | (None, 10, 150) | 150,600 |
-| Dropout 1 | Dropout | (None, 10, 150) | 0 |
-| LSTM 2 | LSTM | (None, 100) | 100,400 |
-| Dropout 2 | Dropout | (None, 100) | 0 |
-| Output | Dense | (None, 3200) | 323,200 |
+| Layer | Type | Config | Role |
+|-------|------|--------|------|
+| 1 | Embedding | vocab × 100 | Converts word IDs to dense vectors |
+| 2 | LSTM | 150 units | Learns temporal patterns in sequences |
+| 3 | Dropout | 0.2 | Regularization against overfitting |
+| 4 | LSTM | 100 units | Extracts deeper sequence representations |
+| 5 | Dropout | 0.2 | Regularization against overfitting |
+| 6 | Dense + Softmax | vocab_size | Outputs probability for each word |
 
 **Compiler Settings:**
-- Loss Function: `categorical_crossentropy`
-- Optimizer: `adam`
-- Metric: `accuracy`
+
+| Parameter | Value | Reason |
+|-----------|-------|--------|
+| Loss | Categorical Crossentropy | Multi-class word classification |
+| Optimizer | Adam | Adaptive learning, fast convergence |
+| Metric | Accuracy | Measures correct next-word predictions |
 
 ---
 
-### ✅ Step 5: Model Training
+### 🏋️ Phase 8 — Model Training & Optimization
 
-| Parameter | Value |
-|-----------|-------|
+**Objective:** Train the LSTM model on prepared sequences and tune for best performance.
+
+| Hyperparameter | Value |
+|----------------|-------|
 | Epochs | 30 |
 | Batch Size | 64 |
 | Validation Split | 10% |
-| Training Samples | ~13,500 |
-| Validation Samples | ~1,500 |
+| Hardware | Google Colab T4 GPU |
+| Training Duration | ~5–15 minutes |
 
-- Model trained on Google Colab with **T4 GPU**
-- Training time: approximately 5–15 minutes
-- Accuracy improved consistently across epochs
+- Model trained over **30 epochs** with real-time accuracy and loss monitoring
+- **Validation split** used to detect and prevent overfitting
+- **Adam optimizer** dynamically adjusted learning rate for stable convergence
+- Training and validation accuracy/loss curves saved as `training_plot.png`
 
 ---
 
-### ✅ Step 6: Results
+### 📈 Phase 9 — Prediction & Result Analysis
+
+**Objective:** Evaluate trained model on unseen input sentences and analyse prediction quality.
+
+#### Performance Metrics
 
 | Metric | Value |
 |--------|-------|
 | Final Training Accuracy | ~85% |
 | Final Validation Accuracy | ~78% |
-| Final Training Loss | Low (decreasing) |
+| Training Loss | Consistently decreasing |
+| Validation Loss | Stable with minor fluctuation |
 
-**Sample Predictions:**
+#### Sample Next Word Predictions
 
-| Input Sentence | Predicted Next Word | Completed Sentence |
-|----------------|--------------------|--------------------|
+| Input Sentence | Predicted Next Word | Full Output |
+|----------------|---------------------|-------------|
 | `to be or not to` | `be` | `to be or not to be` |
 | `the king of` | `denmark` | `the king of denmark` |
 | `my lord` | `i` | `my lord i` |
@@ -240,40 +276,47 @@ Predicted Word     → argmax → "be"
 | `i am` | `not` | `i am not` |
 | `what is` | `the` | `what is the` |
 
----
-
-### ✅ Step 7: Model Saving
-
-After training, the model and supporting files were saved for deployment:
-
-```python
-model.save('lstm_model.h5')          # Trained LSTM model
-pickle.dump(tokenizer, f)            # Word-to-number tokenizer
-pickle.dump(max_seq_len, f)          # Sequence length used in training
-```
+**Analysis:**
+- Model successfully learned Shakespearean word patterns and context
+- Predictions are contextually relevant and linguistically meaningful
+- Performance is strong given the limited 20,000-word training corpus
 
 ---
 
-### ✅ Step 8: Deployment — FastAPI
+### 💾 Phase 10 — Model Serialization & Saving
 
-The trained model was deployed as a **REST API** using FastAPI.
+**Objective:** Persist all trained artifacts to disk for use during API deployment.
 
-**API Endpoints:**
+| File | Format | Purpose |
+|------|--------|---------|
+| `lstm_model.h5` | HDF5 | Complete LSTM model with trained weights |
+| `tokenizer.pkl` | Pickle | Word-to-integer mapping for inference |
+| `max_seq_len.pkl` | Pickle | Sequence length for padding at inference time |
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/` | Welcome message |
-| GET | `/health` | Server health check |
-| POST | `/predict` | Predict next word |
+---
 
-**Request Format:**
+### 🌐 Phase 11 — REST API Deployment via FastAPI
+
+**Objective:** Expose the trained model as a real-time REST API for next word prediction.
+
+**Framework:** FastAPI + Uvicorn ASGI server
+
+#### API Endpoints
+
+| Method | Endpoint | Description | Status |
+|--------|----------|-------------|--------|
+| GET | `/` | Welcome message & API info | ✅ Live |
+| GET | `/health` | Model load status & vocabulary info | ✅ Live |
+| POST | `/predict` | Accept text → return predicted next word | ✅ Live |
+
+#### Request
 ```json
 {
   "text": "to be or not to"
 }
 ```
 
-**Response Format:**
+#### Response
 ```json
 {
   "input_text": "to be or not to",
@@ -282,97 +325,160 @@ The trained model was deployed as a **REST API** using FastAPI.
 }
 ```
 
-**How to Run:**
-```bash
-py -3.11 -m venv venv
-venv\Scripts\activate
-pip install fastapi uvicorn tensorflow numpy nltk
-python main.py
+#### Inference Flow Inside API
+```
+User Input → Clean Text → Tokenize → Pad Sequence → LSTM Forward Pass → Argmax → Return Word
 ```
 
-**Test via Swagger UI:** `http://127.0.0.1:8000/docs`
+---
+
+### 🧪 Phase 12 — API Testing & Validation
+
+**Objective:** Verify all API endpoints function correctly and predictions are valid.
+
+#### Swagger UI Testing
+- Accessed `http://127.0.0.1:8000/docs`
+- Executed **POST /predict** with 7 different test inputs
+- All returned **HTTP 200 OK** with correct JSON structure ✅
+
+#### Postman Testing
+
+| Field | Value |
+|-------|-------|
+| Method | POST |
+| URL | `http://127.0.0.1:8000/predict` |
+| Body | raw JSON |
+| Response Code | 200 OK ✅ |
 
 ---
 
-### ✅ Step 9: Testing & Validation
-
-**Swagger UI Testing:**
-- Opened `http://127.0.0.1:8000/docs`
-- Used **POST /predict** endpoint
-- Tested multiple input sentences
-- All predictions returned successfully ✅
-
-**Postman Testing:**
-- Method: POST
-- URL: `http://127.0.0.1:8000/predict`
-- Body: raw JSON
-- Status code: **200 OK** ✅
+## 📸 Results & Screenshots
 
 ---
 
-## 🧠 LSTM Theory (Mandatory)
+### 🖥️ Screenshot 1 — FastAPI Swagger UI Homepage
+
+> **How to take:** Open `http://127.0.0.1:8000/docs` in browser → take screenshot
+
+![Swagger UI Homepage](screenshots/swagger_homepage.png)
+
+---
+
+### 🔮 Screenshot 2 — POST /predict Endpoint (Try it out)
+
+> **How to take:** Click POST /predict → Try it out → see the endpoint open up → screenshot
+
+![Predict Endpoint](screenshots/predict_endpoint.png)
+
+---
+
+### ✅ Screenshot 3 — Successful Prediction Response 1
+
+> **Input used:** `"to be or not to"`
+> **How to take:** Execute the request → scroll to response section → screenshot
+
+![Prediction Result 1](screenshots/result_1.png)
+
+---
+
+### ✅ Screenshot 4 — Successful Prediction Response 2
+
+> **Input used:** `"the king of"`
+> **How to take:** Change text to `"the king of"` → Execute → screenshot
+
+![Prediction Result 2](screenshots/result_2.png)
+
+---
+
+### ✅ Screenshot 5 — Successful Prediction Response 3
+
+> **Input used:** `"good night sweet"`
+> **How to take:** Change text → Execute → screenshot
+
+![Prediction Result 3](screenshots/result_3.png)
+
+---
+
+### 📊 Screenshot 6 — Model Training Accuracy & Loss Graph
+
+> **How to take:** This image is auto-saved as `training_plot.png` after Colab training
+
+![Training Plot](training_plot.png)
+
+---
+
+### 💻 Screenshot 7 — FastAPI Server Running in CMD
+
+> **How to take:** Screenshot your CMD window showing server started successfully
+
+![CMD Server Running](screenshots/cmd_server.png)
+
+---
+
+### 🩺 Screenshot 8 — GET /health Endpoint Response
+
+> **How to take:** Click GET /health → Try it out → Execute → screenshot response
+
+![Health Check](screenshots/health_check.png)
+
+---
+
+> 📝 **Note:** Replace the image placeholders above with your actual screenshots.
+> Create a folder called `screenshots/` in your GitHub repo and upload all images there.
+
+---
+
+## 🧠 LSTM Mathematical Model (Mandatory for Presentation)
 
 ### What is LSTM?
-LSTM (Long Short-Term Memory) is a special recurrent neural network that solves the **vanishing gradient problem** of regular RNNs. It can remember long-range dependencies in sequences — making it ideal for text prediction.
+LSTM (Long Short-Term Memory) is a gated recurrent neural network that solves the **vanishing gradient problem** of standard RNNs, enabling the model to learn long-range word dependencies in text sequences.
 
-### 🔒 Forget Gate — *"What should I forget from memory?"*
+### 🔒 Forget Gate — What to remove from memory?
 ```
-f(t) = σ(Wf · [h(t-1), x(t)] + bf)
+f(t) = σ( Wf · [h(t-1), x(t)] + bf )
 ```
-- Looks at previous hidden state `h(t-1)` and current input `x(t)`
-- Outputs a value between 0 and 1 for each cell state value
-- **0 = completely forget**, **1 = completely keep**
+Decides what fraction of previous cell state to erase. Output near **0 = forget**, near **1 = keep**.
 
-### 📥 Input Gate — *"What new information should I store?"*
+### 📥 Input Gate — What new information to store?
 ```
-i(t) = σ(Wi · [h(t-1), x(t)] + bi)
-C̃(t) = tanh(Wc · [h(t-1), x(t)] + bc)
+i(t)  = σ( Wi · [h(t-1), x(t)] + bi )
+C̃(t) = tanh( Wc · [h(t-1), x(t)] + bc )
 ```
-- Decides which new values to update in memory
-- Creates new candidate values to add to cell state
+Controls which new word information gets written into long-term memory.
 
-### 📤 Output Gate — *"What should I output?"*
+### 🧠 Cell State — Long-term memory update
 ```
-o(t) = σ(Wo · [h(t-1), x(t)] + bo)
-h(t) = o(t) * tanh(C(t))
+C(t) = f(t) ⊙ C(t-1)  +  i(t) ⊙ C̃(t)
 ```
-- Decides what part of cell state to pass forward
-- Produces the hidden state used for prediction
+Core memory unit — combines selectively forgotten old memory with newly added information.
 
-### 🧠 Cell State `C(t)` — Long-Term Memory
+### 📤 Output Gate — What to pass forward?
 ```
-C(t) = f(t) * C(t-1)  +  i(t) * C̃(t)
+o(t) = σ( Wo · [h(t-1), x(t)] + bo )
+h(t) = o(t) ⊙ tanh( C(t) )
 ```
-- The "conveyor belt" — carries memory across the entire sequence
-- Old memory × forget gate + new info × input gate
+Determines what part of memory to expose as output for next timestep and prediction.
 
-### 💬 Hidden State `h(t)` — Short-Term Output
-```
-h(t) = o(t) * tanh(C(t))
-```
-- Output at each timestep
-- Passed to next LSTM cell AND used for word prediction
-
-### How Sequence Learning Works:
-1. Each word is fed into LSTM one at a time
-2. LSTM updates its memory (cell state) at each step
-3. Forget gate removes irrelevant old words
-4. Input gate adds important new words to memory
-5. After all input words are processed, hidden state is used to predict next word
+### How Sequence Learning Works in This Project
+1. Each word in input sentence is processed **one at a time**
+2. **Forget gate** removes irrelevant past words from memory
+3. **Input gate** stores important new word context
+4. **Cell state** builds up a rich representation of the entire sentence
+5. After final word, **hidden state** encodes full sentence context
+6. **Dense + Softmax layer** converts this context into a probability distribution over all vocabulary words
+7. Word with **highest probability** is returned as the prediction
 
 ---
 
-## 🤖 AI Tools Used (Academic Integrity)
-
-As per assignment requirements, the following AI tools were used:
+## 🤖 Academic Integrity — AI Tools Disclosure
 
 | Tool | Purpose | Sections Used |
 |------|---------|---------------|
-| Claude (Anthropic) | Code generation assistance & explanations | Notebook structure, FastAPI code, README documentation |
+| Claude (Anthropic) | Code generation assistance & explanations | Notebook structure, FastAPI server, README |
 
 ---
 
 ## 📜 License
 
-This project is for educational purposes — Lab Assignment 5.
-Dataset is Public Domain (Project Gutenberg via NLTK).
+Educational project — Lab Assignment 5.
+Dataset: Public Domain via Project Gutenberg (NLTK).
