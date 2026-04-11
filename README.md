@@ -360,7 +360,9 @@ User Input → Clean Text → Tokenize → Pad Sequence → LSTM Forward Pass �
 
 > **How to take:** Open `http://127.0.0.1:8000/docs` in browser → take screenshot
 
-![Swagger UI Homepage](screenshots/swagger_homepage.png)
+![Swagger UI Homepage]
+<img width="1919" height="1017" alt="image" src="https://github.com/user-attachments/assets/14b6267e-1167-4bd9-9006-83f28bde69ce" />
+
 
 ---
 
