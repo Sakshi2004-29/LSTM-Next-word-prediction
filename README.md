@@ -428,7 +428,7 @@ Determines what part of memory to expose as output for next timestep and predict
 
 | Tool | Purpose | Sections Used |
 |------|---------|---------------|
-| Claude (Anthropic) | Code generation assistance & explanations | Notebook structure, FastAPI server, README |
+| Claude (Anthropic) | Code generation assistance & explanations | Notebook structure, FastAPI server|
 
 ---
 
